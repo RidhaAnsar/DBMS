@@ -1,0 +1,50 @@
+CREATE TABLE Supplier (Sp_id VARCHAR2(10) PRIMARY KEY, Sp_name VARCHAR2(50), Sp_city VARCHAR2(50), Sp_revenue NUMBER(10,2) CHECK (Sp_revenue > 5000));
+
+CREATE TABLE Parts (Parts_id VARCHAR2(10) PRIMARY KEY, Parts_name VARCHAR2(50), Parts_color VARCHAR2(20), Parts_stock NUMBER(10));
+
+CREATE TABLE Shipment (Ship_date DATE PRIMARY KEY, Sp_id VARCHAR2(10), Parts_id VARCHAR2(10), Parts_qty NUMBER(10), FOREIGN KEY (Sp_id) REFERENCES Supplier(Sp_id), FOREIGN KEY (Parts_id) REFERENCES Parts(Parts_id));
+
+INSERT INTO Supplier VALUES ('S100', 'Smith Jones', 'Mumbai', 10000);
+INSERT INTO Supplier VALUES ('S101', 'Rajeev Kumar', 'Bangalore', 20000);
+INSERT INTO Supplier VALUES ('S102', 'Manoj M', 'Kochi', 15000);
+INSERT INTO Supplier VALUES ('S103', 'Meera Rao', 'Mumbai', 25000);
+
+INSERT INTO Parts VALUES ('P100', 'Nut', 'Red', 200);
+INSERT INTO Parts VALUES ('P101', 'Bolt', 'Green', 175);
+INSERT INTO Parts VALUES ('P102', 'Screw', 'Red', 200);
+INSERT INTO Parts VALUES ('P103', 'Cam', 'Blue', 145);
+
+INSERT INTO Shipment VALUES ('12.08.2020', 'S100', 'P100', 25);
+INSERT INTO Shipment VALUES ('16.08.2020', 'S101', 'P100', 30);
+INSERT INTO Shipment VALUES ('25.09.2020', 'S100', 'P101', 25);
+INSERT INTO Shipment VALUES ('16.05.2020', 'S100', 'P103', 40);
+INSERT INTO Shipment VALUES ('14.08.2020', 'S102', 'P100', 45);
+
+
+SELECT Sp_name FROM Supplier WHERE Sp_city LIKE 'M%' AND Sp_revenue >= 10000;
+
+SELECT DISTINCT P.Parts_name FROM Parts P JOIN Shipment S ON P.Parts_id = S.Parts_id WHERE TO_CHAR(S.Ship_date, 'MM') = '08';
+
+SELECT DISTINCT S.Sp_name FROM Supplier S JOIN Shipment SH ON S.Sp_id = SH.Sp_id JOIN Parts P ON SH.Parts_id = P.Parts_id WHERE P.Parts_color = 'Red';
+
+SELECT S.Sp_name, P.Parts_name, AVG(SH.Parts_qty) AS AvgQuantity FROM Supplier S JOIN Shipment SH ON S.Sp_id = SH.Sp_id JOIN Parts P ON SH.Parts_id = P.Parts_id GROUP BY S.Sp_name, P.Parts_name;
+
+SELECT DISTINCT P.Parts_name FROM Parts P JOIN Shipment SH ON P.Parts_id = SH.Parts_id JOIN Supplier S ON SH.Sp_id = S.Sp_id WHERE S.Sp_revenue > (SELECT AVG(Sp_revenue) FROM Supplier);
+
+
+CREATE OR REPLACE TRIGGER Ship_check
+AFTER INSERT ON Shipment
+FOR EACH ROW
+DECLARE
+    vStock NUMBER;
+BEGIN
+    
+    SELECT Parts_stock INTO vStock FROM Parts WHERE Parts_id = :NEW.Parts_id;
+
+    UPDATE Parts SET Parts_stock = vStock - :NEW.Parts_qty WHERE Parts_id = :NEW.Parts_id;
+
+    IF (vStock - :NEW.Parts_qty) > 500 THEN
+        DBMS_OUTPUT.PUT_LINE('Warning: Stock of Part ' || :NEW.Parts_id || ' exceeds 500.');
+    END IF;
+END;
+/

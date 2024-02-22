@@ -1,0 +1,54 @@
+CREATE TABLE Department (Dept_id VARCHAR2(10) PRIMARY KEY, Name VARCHAR2(50), Location VARCHAR2(50));
+
+CREATE TABLE Project (Proj_id VARCHAR2(10) PRIMARY KEY, Project_name VARCHAR2(100), Dept_id VARCHAR2(10), FOREIGN KEY (Dept_id) REFERENCES Department(Dept_id));
+
+CREATE TABLE Employee (Emp_id VARCHAR2(10) PRIMARY KEY, Emp_name VARCHAR2(50), Dept_id VARCHAR2(10), Hire_Date DATE, Gender VARCHAR2(1), DOB DATE, Salary NUMBER(10,2), Proj_id VARCHAR2(10), FOREIGN KEY (Dept_id) REFERENCES Department(Dept_id), FOREIGN KEY (Proj_id) REFERENCES Project(Proj_id));
+
+CREATE TABLE Job (Job_id VARCHAR2(10) PRIMARY KEY, Job_title VARCHAR2(50));
+
+
+
+INSERT INTO Department VALUES ('D1', 'IT Department', 'Mumbai');
+INSERT INTO Department VALUES ('D2', 'HR Department', 'New York');
+
+
+INSERT INTO Project VALUES ('P1', 'Project Alpha', 'D1');
+INSERT INTO Project VALUES ('P2', 'Project Beta', 'D2');
+
+
+INSERT INTO Employee VALUES ('E1', 'John Doe', 'D1', TO_DATE('2023-01-01', 'YYYY-MM-DD'), 'M', TO_DATE('1980-01-01', 'YYYY-MM-DD'), 60000, 'P1');
+INSERT INTO Employee VALUES ('E2', 'Jane Smith', 'D2', TO_DATE('2023-01-15', 'YYYY-MM-DD'), 'F', TO_DATE('1985-05-15', 'YYYY-MM-DD'), 70000, 'P2');
+
+INSERT INTO Job VALUES ('J1', 'Software Engineer');
+INSERT INTO Job VALUES ('J2', 'HR Manager');
+
+
+ALTER TABLE Employee ADD Address VARCHAR2(50);
+
+UPDATE Employee SET Salary = Salary + 1000 WHERE Dept_id = 'C01';
+
+SELECT * FROM Employee WHERE AGE < (SELECT AVG(EXTRACT(YEAR FROM SYSDATE) - EXTRACT(YEAR FROM DOB)) FROM Employee);
+
+SELECT P.Project_name FROM Project P JOIN Employee E ON P.Proj_id = E.Proj_id GROUP BY P.Proj_id, P.Project_name HAVING COUNT(E.Emp_id) > 5;
+
+SELECT E.* FROM Employee E JOIN (SELECT Dept_id, MAX(Salary) AS MaxSalary FROM Employee GROUP BY Dept_id) MaxSalaries ON E.Dept_id = MaxSalaries.Dept_id AND E.Salary = MaxSalaries.MaxSalary;
+
+
+
+CREATE OR REPLACE TRIGGER Check_Project_Insert
+BEFORE INSERT ON Project
+FOR EACH ROW
+DECLARE
+    vProjectCount NUMBER;
+    vMaxProjectCount CONSTANT NUMBER := 100; -- Set the threshold
+BEGIN
+    SELECT COUNT(*) INTO vProjectCount FROM Project;
+
+    IF vProjectCount + 1 > vMaxProjectCount THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Insertion of new records in the Project table is restricted. Maximum allowed count reached.');
+    END IF;
+END;
+/
+
+
+

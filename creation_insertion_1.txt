@@ -1,0 +1,55 @@
+CREATE TABLE Customer (Cust_id VARCHAR2(10) PRIMARY KEY, Cust_name VARCHAR2(50), Cust_location VARCHAR2(50), Cust_gender CHAR(1) CHECK (Cust_gender IN ('M', 'F')));
+
+CREATE TABLE Branch (Br_id VARCHAR2(10) PRIMARY KEY, Br_location VARCHAR2(50));
+
+CREATE TABLE Account (Acc_no VARCHAR2(10) PRIMARY KEY, Acc_type VARCHAR2(2) CHECK (Acc_type IN ('SB', 'CU')), Acc_balance NUMBER(10,2) CHECK (Acc_balance > 1000), Cust_id VARCHAR2(10), Br_id VARCHAR2(10), FOREIGN KEY (Cust_id) REFERENCES Customer(Cust_id), FOREIGN KEY (Br_id) REFERENCES Branch(Br_id));
+
+
+INSERT INTO Customer VALUES ('C100', 'Veena Rajiv', 'Mumbai', 'F');
+INSERT INTO Customer VALUES ('C101', 'Satheesh S', 'Kerala', 'M');
+INSERT INTO Customer VALUES ('C102', 'Ram K R', 'Tamilnadu', 'M');
+INSERT INTO Customer VALUES ('C103', 'Anand V', 'Kerala', 'M');
+
+INSERT INTO Branch VALUES ('B1', 'Mumbai');
+INSERT INTO Branch VALUES ('B2', 'Kolkatta');
+INSERT INTO Branch VALUES ('B3', 'Kochi');
+
+INSERT INTO Account VALUES ('A5000', 'SB', 20000, 'C100', 'B1');
+INSERT INTO Account VALUES ('A5001', 'SB', 1500, 'C101', 'B3');
+INSERT INTO Account VALUES ('A5002', 'CU', 63000, 'C100', 'B1');
+INSERT INTO Account VALUES ('A5003', 'SB', 25000, 'C102', 'B1');
+
+SELECT Cust_name FROM Customer WHERE Cust_gender = 'M' AND Cust_location = 'Kerala';
+
+SELECT C.Cust_name FROM Customer C JOIN Account A ON C.Cust_id = A.Cust_id WHERE A.Acc_type = 'CU';
+
+SELECT C.Cust_name FROM Customer C JOIN Account A ON C.Cust_id = A.Cust_id JOIN Branch B ON A.Br_id = B.Br_id WHERE B.Br_location LIKE 'K%';
+
+SELECT B.Br_location FROM Branch B JOIN Account A ON B.Br_id = A.Br_id GROUP BY B.Br_location HAVING COUNT(A.Cust_id) > 2;
+
+SELECT C.Cust_name FROM Customer C JOIN Account A ON C.Cust_id = A.Cust_id WHERE A.Acc_type = 'SB' AND A.Acc_balance > (SELECT AVG(Acc_balance) FROM Account WHERE Acc_type = 'SB');
+
+
+
+CREATE TABLE BackupAcc (Acc_no VARCHAR2(10),Acc_balance NUMBER(10,2),Operation_Type VARCHAR2(10),Operation_Date DATE);
+
+CREATE OR REPLACE TRIGGER AccountTrigger
+BEFORE DELETE OR UPDATE ON Account
+FOR EACH ROW
+DECLARE
+    vOperationType VARCHAR2(10);
+BEGIN
+    
+    IF DELETING THEN
+        vOperationType := 'DELETE';
+    ELSIF UPDATING THEN
+        vOperationType := 'UPDATE';
+    END IF;
+
+    IF :OLD.Acc_balance = 50 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Account balance is 50. Cannot perform the ' || vOperationType || ' operation.');
+    END IF;
+
+    INSERT INTO BackupAcc VALUES (:OLD.Acc_no, :OLD.Acc_balance, vOperationType, SYSDATE);
+END;
+/
