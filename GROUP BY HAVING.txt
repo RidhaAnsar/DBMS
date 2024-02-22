@@ -1,0 +1,75 @@
+select deptno, sum(salary)SUM_SALARY from employeee GROUP BY deptno;
+
+DEPTN SUM_SALARY
+----- ----------
+A00       228500
+B01        41250
+C01        90470
+D11       222100
+E21        91840
+E01        40175
+D21       150920
+E11       104990
+
+select deptno, count(*)emp_count from employeee GROUP BY deptno;
+
+DEPTN  EMP_COUNT
+----- ----------
+A00            3
+B01            1
+C01            3
+D11            9
+E21            4
+E01            1
+D21            6
+E11            5
+
+ select deptno, count(*) from employeee group by deptno having count(*)>
+3;
+
+DEPTN   COUNT(*)
+----- ----------
+D11            9
+E21            4
+D21            6
+E11            5
+
+
+select deptno, count(job)DESIGNER from employeee group by deptno;
+
+DEPTN   DESIGNER
+----- ----------
+A00            3
+B01            1
+C01            3
+D11            9
+E21            4
+E01            1
+D21            6
+E11            5
+
+select deptno, gender, count(*)count, avg(salary)avg_salary, avg(bonus)avg_bonus, avg(comm)avg_commission from employeee group by deptno, gender having  count(*)>=2 ;
+
+DEPTN G      COUNT AVG_SALARY  AVG_BONUS AVG_COMMISSION
+----- - ---------- ---------- ---------- --------------
+A00   M          2      91000       5800           8280
+E11   F          2      28000       3550           2240
+D11   M          3      23470 2466.66667     1877.33333
+C01   F          2      31025       3150           2482
+D11   F          6 25281.6667       2850     2022.16667
+D21   F          6 25153.3333 1816.66667           2012
+E11   M          3      16330 1333.33333     1306.33333
+E21   M          2      23050       3450           1844
+E21   F          2      22870       1500           2030
+
+SQL> select deptno, count(*)DESIGNER from employeee where job='DESIGNER' group by deptno;
+
+DEPTN   DESIGNER
+----- ----------
+D11            8
+
+SELECT DEPTNO, AVG(BONUS)AVG_BONUS, AVG(COMM)AVG_COMM FROM EMPLOYEEE GROUP BY DEPTNO HAVING AVG(BONUS)>3000 AND AVG(COMM)> 3500;
+
+DEPTN  AVG_BONUS   AVG_COMM
+----- ---------- ----------
+A00         4500       6760

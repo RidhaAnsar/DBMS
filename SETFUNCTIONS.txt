@@ -1,0 +1,178 @@
+1. FUNCTIONS:-
+select power(3,2) from dual;
+
+POWER(3,2)
+----------
+         9
+
+SQL> select round(19.870) from dual;
+
+ROUND(19.870)
+-------------
+           20
+
+SQL> select ceil(22.45) from dual;
+
+CEIL(22.45)
+-----------
+         23
+
+SQL> select floor(24.8) from dual;
+
+FLOOR(24.8)
+-----------
+         24
+
+SQL> select abs(-20) from dual;
+
+  ABS(-20)
+----------
+        20
+
+SQL> select exp(5) from dual;
+
+    EXP(5)
+----------
+148.413159
+
+SQL> select greatest (1,10,4) from dual;
+
+GREATEST(1,10,4)
+----------------
+              10
+
+SQL> select least (10, 23, 5) from dual;
+
+LEAST(10,23,5)
+--------------
+             5
+
+SQL> select mod(17,3) from dual;
+
+ MOD(17,3)
+----------
+         2
+
+SQL> select trunc(128.501) from dual;
+
+TRUNC(128.501)
+--------------
+           128
+
+SQL> 
+
+
+
+2. 
+select upper(empname) from employeee;
+
+select lower(empname) from employeee;
+
+select INITCAP(empname) from employeee;
+
+ SELECT LENGTH(empname) from employeee;
+
+select avg(salary) from employeee;
+
+SELECT SYSDATE, TO_CHAR(SYSDATE,’DAY’) from dual;
+
+SYSDATE   TO_CHAR(S
+--------- ---------
+04-AUG-23 FRIDAY
+
+SELECT SYSDATE, TO_DATE(’19/08/2023’,’DD/MM/YY’) FROM DUAL;
+
+SYSDATE   TO_DATE('
+--------- ---------
+04-AUG-23 19-AUG-23
+
+select max(salary) MAX_SAL, min(salary) MIN_SAL from employeee;
+
+   MAX_SAL    MIN_SAL
+---------- ----------
+    152750      15340
+
+SELECT COUNT(*) FROM PROJECT;
+
+  COUNT(*)
+----------
+        18
+
+SQL> SELECT COUNT(*) FROM EMPLOYEEE WHERE SALARY>20000;
+
+  COUNT(*)
+----------
+        25
+DATA MANIPULATION:
+
+1. SELECT PROJNO, EXTRACT(YEAR FROM STDATE) YEAR, EXTRACT(MONTH FROM STDATE) MONTH FROM PROJECT WHERE ENDDATE='02-JAN-2014' ORDER BY PROJNO;
+
+2. SELECT ROUND (MONTHS_BETWEEN(ENDDATE,STDATE)) FROM PROJECT;
+
+3. SELECT EMPNO, EMPNAME, TO_CHAR(HIRE_DATE,'DD-MONTH-YY') FROM EMPLOYEEE;
+
+4. SELECT CURRENT_DATE + 15 from dual;
+
+5. select empname,hire_date from employeee where extract (month from hire_date) = 6;
+
+6.   SELECT SYSDATE, ADD_MONTHS(SYSDATE,4) FROM DUAL;
+
+      SELECT SYSDATE, NEXT_DAY(SYSDATE,'FRIDAY') FROM DUAL;
+
+     SELECT SYSDATE, LAST_DAY(SYSDATE) FROM DUAL;
+
+     SELECT SYSDATE, ROUND(SYSDATE,'MM') FROM DUAL;
+
+
+7.   SELECT EMPNO, TO_CHAR(DOB, 'DDTH-MON-YY') FROM EMPLOYEEE;
+
+SELECT EMPNO, TO_CHAR(DOB, 'DDSP') FROM EMPLOYEEE;
+
+SELECT EMPNO, TO_CHAR(DOB, 'DDSPTH') FROM EMPLOYEEE;
+
+
+8.   SELECT EMPNO, EMPNAME, FLOOR((HIRE_DATE - DOB)/365) AS AGE FROM EMPLOYEEE WHERE FLOOR((HIRE_DATE-DOB)/365) <25 ORDER BY AGE, EMPNO;
+
+SET OPERATIONS
+
+
+SQL> CREATE TABLE EXTRA_WORK_EMP (FIRSTNAME VARCHAR2(25), HOURLYWAGES NUMBER(10,2), WORKDEPT VARCHAR2(25));
+
+
+
+SQL> INSERT INTO EXTRA_WORK_EMP VALUES('TINTU', 350, 'D11');
+
+1 row created.
+
+SQL> INSERT INTO EXTRA_WORK_EMP VALUES('DUNDU', 550, 'A00');
+
+1 row created.
+
+SQL> INSERT INTO EXTRA_WORK_EMP VALUES('DORA', 850, 'E21');
+
+1 row created.
+
+SQL> INSERT INTO EXTRA_WORK_EMP VALUES('BUJI', 550, 'D21');
+
+1 row created.
+
+SQL> INSERT INTO EXTRA_WORK_EMP VALUES('CHUTKI', 750, 'D21');
+
+1 row created.
+INSERT INTO EXTRA_WORK_EMP VALUES('ALAN PAYYAPPILLY', 750, 'E11');
+
+1 row created.
+
+SQL> INSERT INTO EXTRA_WORK_EMP VALUES('BINCY PAUL', 750, 'D21');
+
+1 row created.
+INSERT INTO EXTRA_WORK_EMP VALUES('MERLIN M.D', 750, 'D11');
+
+1 row created.
+
+1. SELECT EMPNAME, DEPTNO FROM EMPLOYEEE WHERE DEPTNO = 'D11' UNION SELECT FIRSTNAME, WORKDEPT FROM EXTRA_WORK_EMP WHERE WORKDEPT = 'D11';
+
+2. SELECT EMPNAME from employeee intersect select firstname from extra_work_emp;
+
+3. SELECT EMPNAME FROM EMPLOYEEE MINUS SELECT FIRSTNAME FROM EXTRA_WORK_EM
+P;
