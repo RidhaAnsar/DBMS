@@ -1,0 +1,114 @@
+Create table customer (Custid varchar(5) PRIMARY KEY,Fname varchar(15) NOT NULL, Lname varchar(15), Address varchar(25), Phone numeric(10));
+ CREATE TABLE orders ( OrderId int NOT NULL, OrderDate date NOT NULL, OrderPrice int NOT NULL, OrderQty int, CustId varchar(15), PRIMARY KEY(OrderId), FOREIGN KEY (CustId) REFERENCES customer(Custid));
+ insert into customer values ('c120', 'Sam', 'Fischer', 'Geroge street, Clifornia', '0987448579'), ('c220','Max','Junior', 'Northern street, Iceland', '7891239634'), ('c320','Ria', 'Mathew', 'Second street, Texas','7419638791'),('c420', 'Lenny','Williams', 'Elzbth street, Singapore', '8527986342'), ('c520','Elena', 'Gilbert', 'Queens street, Malaysia', '9654213789');
+insert into orders values ('120', '2021/2/26', '496', '3', 'c120'), ('220', '2021/3/29', '650', '4', 'c320'), ('320', '2021/3/30', '789', '7', 'c320'), ('420', '2021/4/12', '675', '6', 'c420'), ('520', '2021/6/27', '984', '9', 'c520');
+			
+------------------------------------------------------------------------------------------------------------------------------------ 
+ update orders set OrderQty=50 where CustId='c320' ;
+
+-----------------------------------------------------------------------------------------------
+
+ select OrderId,OrderDate,OrderQty, OrderPrice from customer,orders where Fname='Sam';
+			+---------+------------+----------+------------+---------+
+			| OrderId | OrderDate  | OrderQty | OrderPrice |
+			+---------+------------+----------+------------+---------+
+			|     120   | 2021-02-26  |        3         |        496        |
+			+---------+------------+----------+------------+----------+
+			1 row in set (0.03 sec)
+-------------------------------------------------------------------------------------------------------------------------------
+
+select  max(OrderQty) as MAX_ORDER, min(OrderQty) as MIN_ORDER from orders;
+			+-----------+-----------+----------+
+			| MAX_ORDER | MIN_ORDER |
+			+-----------+-----------+----------+
+			|        50             |         3             |
+			+-----------+-----------+----------+
+
+			1 row in set (0.03 sec)
+-------------------------------------------------------------------------------------------------------------------------------
+
+select Fname, Lname, Phone from customer order by Fname;
+			+-------+----------+------------+--+
+			| Fname | Lname    | Phone      |
+			+-------+----------+------------+--+
+			| Elena    | Gilbert  |9654213789|
+			| Lenny   |Williams| 8527986342|
+			| Max      | Junior    |7891239634 |
+			| Ria        | Mathew | 7419638791|
+			| Sam      | Fischer   |  987448579 |
+			+-------+----------+------------+----+
+			5 rows in set (0.00 sec)
+-------------------------------------------------------------------------------------------------------------------------------
+ select *from customer where Fname like '_a%';
+		+--------+-------+---------+--------------------------+------------+
+		| Custid | Fname | Lname   | Address                  | Phone      |
+		+--------+-------+---------+--------------------------+------------+
+		| c120   | Sam   | Fischer | Geroge street, Clifornia |  987448579 |
+		| c220   | Max   | Junior  | Northern street, Iceland | 7891239634 |
+		+--------+-------+---------+--------------------------+------------+
+		2 rows in set (0.00 sec)
+------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
+
+create table department (Dno varchar(10) PRIMARY KEY, Dname varchar(10));
+Query OK, 0 rows affected (0.01 sec)
+create table employee (Ecode varchar(5), Ename varchar(30) NOT NULL, Dno varchar(10), Dt_jn date, Designation varchar(25), salary integer check (salary between 2 and 7), PRIMARY KEY (Ecode), FOREIGN KEY (Dno) REFERENCES department(Dno));
+Query OK, 0 rows affected (0.03 sec)
+--------------------------------------------------------------------------------------------------------------------------
+
+insert into department values ('D01','Sales'), ('D02', 'HR'), ('D03', 'Marketing'), ('D04', 'Product'), ('D05', 'Design');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+INSERT INTO EMPLOYEE VALUES ('E01', 'Sam', 'D04', '2021/1/1', 'Manager','900000'), ('E02', 'Mohan', 'D02', '2021/3/10', 'CEO', '1200000'), ('E03', 'Mark', 'D05', '2021/2/19', 'Design Executive', '1000000'), ('E04', 'Elena', 'D04', '2021/4/2', 'Tech Officer', '800000'), ('E05', 'Damon', 'D03', '2021/6/12', 'Marketing Officer', '400000');
+--------------------------------------------------------------------------------------------------------------------------
+update employee set Designation='Manager' where Ename='Mohan';
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+--------------------------------------------------------------------------------------------------------------------------
+select SUM(salary) from employee where Dno='D04';
++-------------+---+
+| SUM(salary) |
++-------------+---+
+|     1700000    |
++-------------+---+
+1 row in set (0.02 sec)
+--------------------------------------------------------------------------------------------------------------------------
+select Ename, Dname from employee,department where employee.Dno=department.dno;
++-------+-----------+----+
+| Ename | Dname     |
++-------+-----------+----+
+| Mohan  | HR            |
+| Damon |Marketing|
+| Sam       | Product    |
+| Elena     | Product    |
+| Mark     | Design      |
++-------+-----------+-----+
+5 rows in set (0.00 sec)
+--------------------------------------------------------------------------------------------------------------------------
+create view employee_view as select * from employee;
+Query OK, 0 rows affected (0.22 sec)
+------------------------------------------------------------------------------------------------------------------------
+select distinct(Designation) from employee;
++-------------------+
+    			| Designation     |
++-------------------+
+| Manager          |
+| Design Executive  |
+| Tech Officer     |
+| Marketing Officer |
++-------------------+
+4 rows in set (0.01 sec)
+-------------------------------------------------------------------------------------------------------------------------
+select Ename,salary from employee where salary > (select avg(salary) from employee);
++-------+---------+
+| Ename | salary  |
++-------+---------+
+| Sam   |  900000 |
+| Mohan | 1200000 |
+| Mark  | 1000000 |
++-------+---------+
+3 rows in set (0.03 sec)
+
+
+
+
