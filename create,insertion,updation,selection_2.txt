@@ -1,0 +1,58 @@
+create table book (BookId varchar(6) PRIMARY KEY, BookName varchar(15) NOT NULL, Author_Name varchar(15), Price integer check(Price between 2 and 5));
+Query OK, 0 rows affected (0.04 sec)
+create table publisher (Publ_ID varchar(5), Publ_Name varchar(25) NOT NULL, BookId varchar(6), PRIMARY KEY(Publ_ID), FOREIGN KEY(BookId) REFERENCES book(BookId));
+Query OK, 0 rows affected (0.03 sec)
+-----------------------------------------------------------------------------------------------------------------------------------insert into book values ('BO1', 'THE WIND', 'MANO', '236'), ('B02', 'FIRE AND AIR', 'SURESH', '500'), ('B03', 'ALASKA', 'JOHN GREEN', '1000'), ('B04', 'DA VINCI CODE', 'DAN BROWN', '1500'), ('B05', 'ALCHEMIST', 'PAULO COELHO', '1200');
+Query OK, 5 rows affected (0.03 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+insert into publisher values ('P01', 'PHI', 'B05'), ('P02', 'PENGUIN', 'B02'), ('P03', 'SKYDIVE', 'BO1'), ('P04', 'PHI', 'B03'), ('P05', 'PHI', 'B04');
+Query OK, 5 rows affected (0.00 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+-----------------------------------------------------------------------------------------------------------------------------------update book set Price=Price+250 where Author_Name='MANO';
+Query OK, 1 row affected (0.04 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+-----------------------------------------------------------------------------------------------------------------------------------select * from book where price > (select avg(price) from book);
++--------+---------------+--------------+-------+--------+
+| BookId | BookName      | Author_Name  | Price |
++--------+---------------+--------------+-------+--------+
+| B03       | ALASKA             | JOHN GREEN     |  1000 |
+| B04       | DA VINCI CODE | DAN BROWN   |  1500 |
+| B05       | ALCHEMIST      | PAULO COELHO|  1200 |
++--------+---------------+--------------+-------+---------+
+3 rows in set (0.00 sec)
+-----------------------------------------------------------------------------------------------------------------------------------select BookName, Author_Name, Publ_Name from book,publisher where book.BookId=publisher.BookId AND Publ_Name='PHI';
++---------------+--------------+-----------+------------+
+| BookName         | Author_Name  | Publ_Name |
++---------------+--------------+-----------+-------------+
+| ALASKA               | JOHN GREEN     | PHI                 |
+| DA VINCI CODE | DAN BROWN     | PHI                 |
+| ALCHEMIST        | PAULO COELHO| PHI                 |
++---------------+--------------+-----------+-------------+
+3 rows in set (0.00 sec)
+-----------------------------------------------------------------------------------------------------------------------------------create view pulisher_view as select * from publisher;
+Query OK, 0 rows affected (0.03 sec)
+-----------------------------------------------------------------------------------------------------------------------------------select *from publisher order by Publ_Name;
++---------+-----------+--------+
+| Publ_ID | Publ_Name | BookId |
++---------+-----------+--------+
+| P02     | PENGUIN   | B02    |
+| P01     | PHI       | B05    |
+| P04     | PHI       | B03    |
+| P05     | PHI       | B04    |
+| P03     | SKYDIVE   | BO1    |
++---------+-----------+--------+
+5 rows in set (0.00 sec)
+-----------------------------------------------------------------------------------------------------------------------------------
+select distinct(Author_Name) from book;
++--------------+
+| Author_Name  |
++--------------+
+| SURESH       |
+| JOHN GREEN   |
+| DAN BROWN    |
+| PAULO COELHO |
+| MANO         |
++--------------+
+5 rows in set (0.00 sec)
+
+
